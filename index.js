@@ -25,9 +25,15 @@ const io = new Server(http);
 // 
 
 // MongoDB Connection
-main().then(() => console.log("Connection Successful")).catch((err) => console.log(err));
+main()
+  .then(() => console.log("MongoDB Connection Successful"))
+  .catch((err) => console.error("MongoDB Connection Error:", err));
+
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/whatsapp");
+  await mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
 }
 
 // Middleware Setup
