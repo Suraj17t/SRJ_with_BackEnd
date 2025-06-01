@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookmarked Posts</title>
+  <!-- <link rel="stylesheet" href="/css/styles.css"> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/solid.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/regular.min.css">
+  <link rel="stylesheet" href="Social.css" />
+<!--  -->
+  <style>
+    .fa-bookmark.fa-solid {
+    color: #007bff;
+  }
+  /* Add styles from SocialMedia.ejs if needed, e.g.: */
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .feeds {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .feed {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background: #fff;
+  }
+  .user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .profile-pic img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  .photo img, .photo video {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 10px 0;
+  }
+  .action-button {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+  }
+  .interaction-button i {
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 20px;
+  }
+  .liked-by {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .liked-by img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
+  .caption p {
+    margin: 10px 0;
+  }
+  .comments {
+    color: #666;
+  }
+  .edit {
+    position: relative;
+  }
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+  }
+  .dropdown-menu button {
+    display: block;
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+  }
+  .dropdown-menu button:hover {
+    background: #f0f0f0;
+  }
+  .middle .feed .action-button {
+    display: flex
+;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.4rem;
+    margin: 0.6rem;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Bookmarked Posts</h1>
+    <a href="/posts">Back to Feed</a>
+
+    <% if (posts.length === 0) { %>
+      <p>No bookmarked posts yet.</p>
+    <% } else { %>
+      <div class="feeds">
+        <% for(let post of posts) { %>
+          <div class="feed" id="post-<%= post._id %>">
+            <div class="head">
+              <!-- Optional head content -->
+            </div>
+
+            <div class="user">
+              <div class="profile-pic">
+                <img src="/uploads/<%= post.profile_image || 'default-profile.jpg' %>" alt="Profile Picture">
+              </div>
+              <div class="info">
+                <h3><%= post.name || '' %></h3>
+                <small><%= post.location || '' %>, <%= post.created_at?.toLocaleString?.() || '' %></small>
+              </div>
+              
+              <span class="edit">
+                <i class="uil uil-ellipsis-h" onclick="toggleDropdown('<%= post._id %>', event)"></i>
+                <div class="dropdown-menu" id="dropdown-<%= post._id %>">
+                  <form action="/posts/<%= post._id %>/edit">
+                    <button type="submit">Edit</button>
+                  </form>
+                  <form action="/posts/<%= post._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure?')">
+                    <button type="submit">Delete</button>
+                  </form>
+                </div>
+              </span>
+            </div>
+
+            <div class="photo">
+              <% if (post.imageSource && (post.imageSource.endsWith('.mp4') || post.imageSource.endsWith('.webm') || post.imageSource.endsWith('.ogg'))) { %>
+                <video width="100%" height="auto" controls>
+                  <source src="/Uploads/<%= post.imageSource %>" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              <% } else { %>
+                <img src="/Uploads/<%= post.imageSource || 'default-image.jpg' %>" alt="Post Image" style="max-width: 100%; height: auto;">
+              <% } %>
+            </div>
+
+            <!-- <div class="action-button">
+              <div class="interaction-button">
+                <i class="fas fa-heart" onclick="toggleLike(this, '<%= post._id %>')"></i>
+                <a href="#"><i class="fa-regular fa-comment"></i></a>
+                <i class="fa-solid fa-share-from-square share-button" data-div="shareDialog-<%= post._id %>"></i>
+              </div>
+              <div class="bookmark">
+                <span>
+                  <i class="fa-sharp fa-<%= post.isBookmarked ? 'solid' : 'regular' %> fa-bookmark old-bookmark" onclick="savePost('<%= post._id %>', this)"></i>
+                </span>
+              </div>
+            </div> -->
+                    <div class="action-button">
+          <div class="interaction-button">
+          
+            <i class="fas fa-heart <%= post.likedBy.includes(currentUser._id) ? 'liked' : '' %>"
+                onclick="toggleLike(this, '<%= post._id %>')" 
+                id="likeIcon-<%= post._id %>"></i>
+             
+                <a href="#" class="comment-btn" data-post-id="<%= post._id %>">
+                    <i class="fa-regular fa-comment"></i>
+                  </a>
+            <i class="fa-solid fa-share-from-square share-button" data-post-id="<%= post._id %>"></i>
+
+
+          </div>
+          <div class="bookmark">
+            <span>
+              <i class="fa-sharp fa-<%= post.isBookmarked ? 'solid' : 'regular' %> fa-bookmark old-bookmark" onclick="savePost('<%= post._id %>', this)"></i>
+            </span>
+          </div>
+        </div>
+
+            <div class="liked-by">
+              <span><img src="/Uploads/profile-15.jpg"></span>
+              <span><img src="/Uploads/profile-16.jpg"></span>
+              <span><img src="/Uploads/profile-17.jpg"></span>
+              <!-- <p>Liked by <b>BCCI</b> and <b><span id="likeCount-<%= post._id %>"><%= post.no_likes || 0 %></span> others</b></p> -->
+              <p><b><span class="lc" id="likeCount-<%= post._id %>"><%= post.no_likes || 0 %></span></b>&nbsp;&nbsp;<span class="showed-love-text">&nbsp;people showed love</span></p>
+
+            </div>
+
+            <div class="caption">
+              <p><b><%= post.name || '' %></b> <%= post.caption || '' %>
+              <a style="color: blue;" class="theme-link"><span class="hash-tag"><%= post.hashtags %></span></a></p>
+            </div>
+
+            <div class="comments text-muted">View all <%= post.comments || 0 %> comments</div>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+  </div>
+
+  <script src="/js/bookmark.js"></script>
+  <script src="/js/j.js"></script>
+  <script>
+    // Reuse toggleDropdown from SocialMedia.ejs (ensure it's included if not in bookmark.js)
+    function toggleDropdown(postId, event) {
+      event.stopPropagation();
+      const dropdown = document.getElementById(`dropdown-${postId}`);
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Reuse toggleLike from SocialMedia.ejs (ensure it's included if not in bookmark.js)
+    function toggleLike(element, postId) {
+      const isLiked = element.classList.contains('liked');
+      fetch(`/posts/${postId}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ like: !isLiked })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById(`likeCount-${postId}`).textContent = data.newLikeCount;
+          element.classList.toggle('liked');
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      document.querySelectorAll('.dropdown-menu').forEach(dropdown => {
+        dropdown.style.display = 'none';
+      });
+    });
+  </script>
+</body>
+</html>

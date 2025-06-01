@@ -1,0 +1,19 @@
+<!-- views/partials/comments.ejs -->
+<% if (post.commentsArray && post.commentsArray.length > 0) { %>
+    <% post.commentsArray.forEach(comment => { %>
+      <div class="mb-2 border-b pb-1">
+        <strong><%= comment.user?.name || "Unknown" %></strong>: 
+        <%= comment.text %><br />
+        <small class="text-gray-500"><%= new Date(comment.createdAt).toLocaleDateString() %></small>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <p class="text-gray-500">No comments yet.</p>
+  <% } %>
+  
+  <!-- Comment Form -->
+  <form action="/posts/<%= post._id %>/comments" method="POST">
+    <textarea name="text" rows="2" required placeholder="Write your comment..." class="w-full p-2 border rounded-md"></textarea>
+    <button type="submit" class="mt-2 px-4 py-1 bg-blue-600 text-white rounded">Post Comment</button>
+  </form>
+  

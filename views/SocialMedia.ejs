@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width= , initial-scale=1.0"/>
+    <title>SRj social</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v2.1.6/css/unicons.css"/>
+     <!-- Awesome Icon -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="Social.css" />
+    <link rel="manifest" href="/manifest.json">
+
+  </head>
+  <body>
+    <% if (message) { %>
+  <script>
+    alert("<%= message %>");
+  </script>
+<% } %>
+
+      <nav>
+            <div class="container">
+                <h2 class="logo">SRj Social</h2>
+                <!-- Working <div class="search-bar">
+                    <i class="uil uil-search"></i>
+                    <input class="searchbar"
+                    type="search"
+                    placeholder="Search for creators, inspirations and projects"/>
+                </div> -->
+
+<!-- 22/05/2025 => Working => Adding Search System -->
+                    <!-- <form class="search-form" action="/user-search" method="GET">
+                          <div class="search-bar"> 
+                            <i class="uil uil-search"></i>
+                            <input 
+                              class="searchbar" 
+                              type="search" 
+                              id="user-search-input"
+                              name="name" 
+                              placeholder="Search for creators, inspirations and projects" 
+                              required
+                            />
+                            <ul class="search-suggestions" id="search-suggestions"></ul>
+                          </div>
+                  </form> -->
+<!-- END => 22/05/2025 => END => WOrking=> Adding Search System -->
+<!-- Try 2 -->
+<form class="search-form" action="/user-search" method="GET" autocomplete="off">
+  <div class="search_bar" style="position: relative;">
+    <i class="uil uil-search"></i>
+    <input 
+      id="user-search-input"
+      class="searchbar" 
+      type="search" 
+      name="name" 
+      placeholder="Search for creators, inspirations and projects" 
+      required
+      spellcheck="false"
+      autocomplete="off"
+      aria-autocomplete="list"
+      aria-controls="search-suggestions"
+      aria-haspopup="listbox"
+      aria-expanded="false"
+    />
+    <ul id="search-suggestions" class="search-suggestions" role="listbox"></ul>
+  </div>
+</form>
+
+
+
+<!--  -->
+                <div class="create"> 
+                    <!-- added -->
+
+<form method="GET" action="/posts/new">    
+    <button type="submit" class="btn btn-primary" id="create-post">Create Post</button>
+
+</form>    
+    <!-- <div id="upload-form-container" class="upload-form-container"></div> -->
+      <!-- Button Added -->
+      <!-- <button id="addStoryButton">Add Story</button> -->
+      <button class="add-story-btn" onclick="document.getElementById('fileInput').click();">+ Add Story</button>
+      <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;" onchange="addStory(event)">
+
+      <!-- End -->
+                    
+                    <!-- end -->
+                    <!-- <button class="profile-btn" id="profileButton"> -->
+
+<!-- Working -->
+                    <!-- <div class="profile-pic">
+                        <img 
+                            src="<%= currentUser && currentUser.profile_image ? '/uploads/' + currentUser.profile_image : '/uploads/default-profile.png' %>" 
+                            alt="Profile Image" 
+                            style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                        >
+
+                    </div> -->
+
+    <!-- Working END -->
+                        <div class="profile-pic" id="goToProfileUpload" style="cursor: pointer;">
+                            <img src="/uploads/<%= user.profile_image %>" alt="Profile Image">
+                        </div>
+
+
+
+
+                    <!-- </button> -->
+                    <!-- <button onclick="goToSaved()">Go to Saved Posts</button> -->
+                    <!-- <button class="btn btn-primary" id="signout-button" >Sign Out</button> -->
+                     
+                      <!-- other nav items -->
+  
+                        <% if (currentUser) { %>
+                            <form action="/logout" method="GET" style="display: inline;">
+                            <button class="btn btn-primary">Sign Out</button>
+                            </form>
+                        <% } else { %>
+                            <a href="/auth" class="btn btn-outline-primary">Login / Signup</a>
+                        <% } %>
+                </div>
+            </div>
+      </nav>
+
+      <main>
+          <div class="container">
+              <div class="left">
+                  <a class="profile">
+                      <div class="profile-pic" id="profileHandle">
+                        <img src="/uploads/<%= user.profile_image %>" alt="Profile Image">
+                      </div>
+                      <div class="handle" id="profileHandle">
+                          <h4>@<%= currentUser.name %></h4>
+                          <!-- <p class="text-muted">@<%= currentUser.name %></p> -->
+                      </div>
+                  </a>
+                  <div class="sidebar">
+                    <a class="menu-item active">
+                      <span><i class="uil uil-home"></i></span> <h3>Home</h3>
+                    </a>
+                    <a id="exploreBtn" style="cursor: pointer;" class="menu-item ">
+                      <span><i class="uil uil-compass"></i></span> <h3>Explore</h3>
+                    </a>
+                    <a class="menu-item" id="notifications">
+                      <span><i class="uil uil-bell"><small class="notification-count">4+</small></i></span> <h3>Notifications</h3>
+                      <div class="notifications-popup">
+                          <div>
+                              <div class="profile-pic">
+                                  <img src="/uploads/goku-profile-pic.jpg" >
+                              </div>
+                              <div class="notification-body">
+                                  <b>Goku</b> accepted your friend request
+                                  <small class="text-muted">2 DAYS AGO</small>
+                              </div>
+                          </div>
+                          <div>
+                              <div class="profile-pic">
+                                  <img src="/uploads/deep-profile-pic1.jpeg" >
+                              </div>
+                              <div class="notification-body">
+                                  <b>Deep Nimia</b> commented on your post
+                                  <small class="text-muted">1 HOUR AGO</small>
+                              </div>
+                          </div>
+                          <div>
+                              <div class="profile-pic">
+                                  <img src="/uploads/a-profile-pic.jpeg" >
+                              </div>
+                              <div class="notification-body">
+                                  <b>Akash</b> and 210 other liked your post
+                                  <small class="text-muted">4 MINUTES AGO</small>
+                              </div>
+                          </div>
+                          <div>
+                              <div class="profile-pic">
+                                  <img src="/uploads/hardeep-profile-pic.jpg" >
+                              </div>
+                              <div class="notification-body">
+                                  <b>hardeep</b> started following you
+                                  <small class="text-muted"> 11 HOURS AGO</small>
+                              </div>
+                          </div>
+                      </div>
+                    </a>
+                    <a id="messagesBtn" class="menu-item" id="messages-notifications">
+                        <i class="uil uil-envelope"><small class="notification-count">6</small></i></span><h3>Messages</h3>
+                    </a>
+                    <!-- No Need Now => Check Later <= -->
+                    <!-- <a href="/bookmarks" class="menu-item ">
+                      <span><i class="uil uil-bookmark"></i></span> <h3>Bookmarks</h3>
+                    </a> -->
+                    <!-- 16/4/25  Working Better -->
+                            <a id="bookmarks-nav" class="menu-item">
+                                <span><i class="uil uil-bookmark"></i></span>
+                                <h3>Bookmarks</h3>
+                            </a>
+                    <!-- END 16/4/25 -->
+                    <a class="menu-item " id="analyticsBtn">
+                      <span><i class="uil uil-analytics"></i></span> <h3>Analytics</h3>
+                    </a>
+                    <a class="menu-item " id="theme">
+                      <span><i class="uil uil-palette"></i></span> 
+                      <h3>Theme</h3>
+                    </a>
+                    <a id="settingsBtn" class="menu-item ">
+                      <span><i class="uil uil-setting"></i></span> <h3>Settings</h3>
+                    </a>
+                    
+                    <!-- <label class="btn btn-primary" for="create-post">Create Post</label> -->
+                </div>
+              </div>
+              
+
+<!-- Stories  -->
+            <div class="middle">
+             <div class="story-wrapper">
+                <div class="stories" id="storiesContainer">
+                    <div class="story">
+                        <div class="profile-pic">
+                            <img src="/uploads/<%= user.profile_image %>" alt="Profile Image">
+                        </div>
+                        <p class="name">Your Story</p>
+                    </div>
+                    <div class="story">
+                        <div class="profile-pic">
+                            <img src="/uploads/profile-9.jpg" alt="">
+                        </div>
+                        <p class="name">AI Fussion</p>
+                    </div>
+                    <div class="story">
+                        <div class="profile-pic">
+                            <img src="/uploads/jadeja-profile-pic1.jpeg" alt="">
+                        </div>
+                        <p class="name">Ravindra Jadeja</p>
+                    </div>
+                    <div class="story">
+                        <div class="profile-pic">
+                            <img src="/uploads/deep-profile-pic1.jpeg" alt="">
+                        </div>
+                        <p class="name">Deep Nimia</p>
+                    </div>
+                    <div class="story">
+                        <div class="profile-pic">
+                            <img src="/uploads/ellyse-profile-pic.jpeg" alt="">
+                        </div>
+                        <p class="name">Ellyse Perry</p>
+                    </div> 
+                    <div class="story">
+                        <div class="profile-pic">
+                            <img src="/uploads/vegeta-profile-pic.png" alt="">
+                        </div>
+                        <p class="name">Prince Vegeta</p>
+                    </div>
+                </div>
+             </div>
+<!-- End of stories -->
+                <form class="create-post" method="GET" action="/posts/new">
+                    <div class="profile-pic">
+                        <img src="/uploads/<%= user.profile_image %>" alt="Profile Image">
+                    </div>
+                    <input type="text" placeholder="What's on your mind <%= currentUser.name %>?" id="create-post" readonly>
+                    <input type="submit" value="Post" class="btn btn-primary">
+                </form>
+<!-- new Post -->
+
+<div class="feeds" id="feedsContainer">
+    <!-- New posts will be appended here -->
+</div>
+<div id="shareDialogTemplate" class="share-dialog">
+    Share this post!
+</div>
+
+<!--1st Post -->
+
+<!-- Posts Feed -->
+<div class="feeds">
+    <% for(let post of posts) { %>
+      <div class="feed" id="post-<%= post._id %>">
+        <div class="head">
+          <!-- Optional head content  id="post-<%= post._id %>" -->
+        </div>
+  
+        <div class="user">
+          <div class="profile-pic">
+            <img src="/uploads/<%= post.profile_image || 'default-profile.jpg' %>" alt="Profile Picture">
+            <!-- <img 
+            src="<%= currentUser && currentUser.profile_image ? '/uploads/' + currentUser.profile_image : '/uploads/default-profile.png' %>" 
+            alt="Profile Image" 
+            style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+          > -->
+          
+          </div>
+          <div class="info">
+            <h3><%= post.name || '' %></h3>
+            <small><%= post.location || '' %>, <%= post.created_at?.toLocaleString?.() || '' %></small>
+          </div>
+<!-- Working  ================================================================================================-->
+          <!-- <span class="edit">
+            <i class="uil uil-ellipsis-h" onclick="toggleDropdown('<%= post._id %>', event)"></i>
+
+            <div class="dropdown-menu" id="dropdown-<%= post._id %>">
+              <form action="/posts/<%= post._id %>/edit">
+                <button type="submit">Edit</button>
+              </form>
+              
+               Delete form inside dropdown
+              <form action="/posts/<%= post._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure?')">
+                <button type="submit">Delete</button>
+              </form>
+            </div>
+          </span> -->
+<!-- END Working============================================================================================================================== -->
+          
+<!-- 17/4/25 (...) Edit/delete Authorization-->
+
+<% 
+  const isAuthor = post.author && currentUser && (
+    (post.author._id && post.author._id.toString() === currentUser._id.toString()) ||
+    (post.author.toString() === currentUser._id.toString())
+  );
+%>
+
+<% if (isAuthor) { %>
+  <span class="edit">
+    <i class="uil uil-ellipsis-h" onclick="toggleDropdown('<%= post._id %>')"></i>
+
+    <div class="dropdown-menu" id="dropdown-<%= post._id %>">
+      <form action="/posts/<%= post._id %>/edit" method="GET">
+        <button type="submit">Edit</button>
+      </form>
+      <form action="/posts/<%= post._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure?')">
+        <button type="submit">Delete</button>
+      </form>
+    </div>
+  </span>
+<% } %>
+
+  
+
+<!--  -->
+        </div>
+  
+       
+        <div class="photo">
+            <% if (post.imageSource && (post.imageSource.endsWith('.mp4') || post.imageSource.endsWith('.webm') || post.imageSource.endsWith('.ogg'))) { %>
+              <video width="100%" height="auto" controls controlsList="nodownload" oncontextmenu="return false;">
+                <source src="/uploads/<%= post.imageSource %>" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            <% } else { %>
+              <img src="/uploads/<%= post.imageSource || 'default-image.jpg' %>" alt="Post Image" style="max-width: 100%; height: auto;">
+            <% } %>
+          </div>
+          
+  
+        <div class="action-button">
+          <div class="interaction-button">
+          
+            <i class="fas fa-heart <%= post.likedBy.includes(currentUser._id) ? 'liked' : '' %>"
+                onclick="toggleLike(this, '<%= post._id %>')" 
+                id="likeIcon-<%= post._id %>"></i>
+             
+                <a href="#" class="comment-btn" data-post-id="<%= post._id %>">
+                    <i class="fa-regular fa-comment"></i>
+                  </a>
+            <i class="fa-solid fa-share-from-square share-button" data-post-id="<%= post._id %>"></i>
+
+
+          </div>
+          <div class="bookmark">
+            <span>
+              <i class="fa-sharp fa-<%= post.isBookmarked ? 'solid' : 'regular' %> fa-bookmark old-bookmark" onclick="savePost('<%= post._id %>', this)"></i>
+            </span>
+          </div>
+        </div>
+  
+        <div class="liked-by">
+          <span><img src="/uploads/profile-15.jpg"></span>
+          <span><img src="/uploads/profile-16.jpg"></span>
+          <span><img src="/uploads/profile-17.jpg"></span>
+<!-- Changing no. of likes here update ejs up if not works-->
+          <p><b><span class="lc" id="likeCount-<%= post._id %>"><%= post.formattedLikes || 0 %></span></b>&nbsp;&nbsp;<span class="showed-love-text">&nbsp;people showed love</span></p>
+        </div>
+  
+        <div class="caption">
+          <p><b><%= post.name || '' %></b> <%= post.caption || '' %>
+          <a style="color: blue;" class="theme-link"><span class="hash-tag"><%= post.hashtags%></span></a></p>
+        </div>
+  
+        <!-- <div class="comments text-muted">View all <%= post.comments || 0 %> comments</div> -->
+      </div>
+    <% } %>
+  </div>
+
+<!-- 25/4/25 => Comment modal popup -->
+<!-- Comment Modal -->
+ <!-- Working =================================== -->
+
+ <!-- <div id="commentModal" class="comment-modal hidden">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+  
+      <div class="comments-list" id="commentsList"> 
+        <-- Comments  => will be dynamically inserted here 
+        <-- Comments => Example structure for each comment: 
+
+       </div> 
+  
+       Comments => Add New Comment 
+       <form id="commentForm">
+        <input type="hidden" name="postId" id="commentPostId">
+        <div class="add-comment-section">
+          <textarea name="commentText" id="commentText" placeholder="Write a comment..." required></textarea>
+          <button type="submit">Post Comment</button>
+        </div>
+      </form>
+    </div>
+  </div> -->
+   
+  <!-- END of Working -->
+<!-- END =>  25/4/25 => Comment modal popup  -->
+
+<!-- 26/4/25 -->
+<div id="commentModal" class="comment-modal hidden">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+
+    <!-- Post Info (optional) -->
+    <div class="post-info">
+      <!-- Add image/username/caption/hashtags if needed -->
+    </div>
+
+    <!-- Scrollable Comments -->
+    <div class="comments-list" id="commentsList">
+      <!-- Dynamically inserted comments -->
+    </div>
+
+    <!-- Sticky Comment Form -->
+    <form id="commentForm">
+      <input type="hidden" name="postId" id="commentPostId">
+      <div class="add-comment-section">
+        <textarea name="commentText" id="commentText" placeholder="Write a comment..." required></textarea>
+        <button type="submit">Post Comment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- END 26/4/25 -->
+
+
+<!-- Common Share Dialog (Place below .feeds) -->
+<!-- Share Dialog (Add outside the loop, just once) -->
+<div id="toast" class="toast hidden">Link Copied!</div>
+
+
+              </div>
+<!-- ============= Rigth Side Message Bar ================================ -->
+              <div class="right">
+                  <div class="messages">
+                    <div class="heading">
+                        <h4>Messages</h4>
+                        <span><i class="uil uil-edit"></i></span>
+                    </div>
+  
+                    <div class="search-bar">
+                        <span><i class="uil uil-search"></i></span>
+                        <input type="search" placeholder="Search Messages" id="message-search">
+                    </div>
+  
+                    <div class="category">
+                        <h6 class="active">Primary</h6>
+                        <h6>General</h6>
+                        <!-- <h6 class="message-requests">Requests(3)</h6> -->
+                         <h6 class="message-requests">Requests(<span id="requestCount"><%= friendrequests.length %></span>)</h6>
+
+                    </div>
+                <!--  -->  
+                    <!-- <% for(let message of messages) { %>
+                    <div class="message">
+                        <div class="profile-pic">
+                            <img src="/uploads/<%= message.profileImage %>">
+                            <div class="<%= message.IsActive %>"></div>
+                        </div>
+                        <div class="message-body">
+                            <h5><%= message.senderName %></h5>
+                            <p class="<%= message.messageType %>"><%= message.messageText %></p>
+                        </div>
+                    </div>  
+                    <% } %>                            -->
+                                                                   
+
+              <!--  -->
+                  <div class="friends-section">
+                    <div class="friend-list">
+                      <% friends.forEach(friend => { %>
+                        <div class="friend-card">
+                          <img src="/uploads/<%= friend.profile_image %>" alt="profile" class="friend-pic">
+                          <p><a href="/chat/<%= friend._id %>" style="text-decoration: none; color: inherit;"><%= friend.name %></a>
+                              <!-- <a href="/chat/<%= friend._id %>">Chat with <%= friend.name %></a> -->
+
+                          </p>
+                        </div>
+                      <% }) %>
+                    </div>
+                  </div>
+
+
+
+              <!--  -->
+                </div> 
+                <div class="friend-requests">
+                    <h4>Requests</h4>
+            <!-- request 1 -->
+<% if (friendrequests && friendrequests.length > 0) { %>
+  <% friendrequests.forEach(sender => { %>
+    <div class="request">
+      <div class="info">
+        <div class="profile-pic">
+          <img src="/uploads/<%= sender.profileImage %>" alt="<%= sender.senderName %>">
+        </div>
+        <div>
+          <h5><%= sender.senderName %></h5>
+        </div>
+      </div>
+      <div class="action">
+        <form action="/accept-request/<%= sender.senderName %>" method="POST" style="display:inline;">
+          <button class="btn btn-primary">Accept</button>
+        </form>
+        <form action="/decline-request/<%= sender.senderName %>" method="POST" style="display:inline;">
+          <button class="btn declineBtn">Decline</button>
+        </form>
+      </div>
+    </div>
+  <% }) %>
+<% } else { %>
+  <p>No new friend requests</p>
+<% } %>
+
+            <!-- request 1 End -->
+            
+              </div> 
+              </div>
+          </div>
+<!-- -===== Theme Coustomization ==================================-- -->
+<div class="customize-theme">
+    <div class="card"> 
+    <h2>Customize your view</h2>
+    <p class=”text-muted”>Manage your font size, color, and background.</p>
+    
+    <!---FONT SIZES---->
+    
+    <div class="font-size">
+       <h4>Font Size</h4>
+      <div>
+         <h6>Aa</h6>
+      <div class="choose-size">
+        <span class="font-size-1"></span>
+        <span class="font-size-2 active"></span>
+        <span class="font-size-3"></span>
+        <span class="font-size-4"></span>
+        <span class="font-size-5"></span>
+      </div>
+    <h3>Aa</h3>
+    </div>
+    </div>
+    
+    <!-- PRIMARY COLORS -->
+    
+<div class="color">
+ <h4>Color</h4>
+ <div class="choose-color">
+    <span class="color-1 active"></span>
+    <span class="color-2"></span> 
+    <span class="color-3"></span>
+    <span class="color-4"></span>
+    <span class="color-5"></span>
+ </div>
+</div>
+
+<!---BACKGROUND COLORS--->
+<div class="background">
+     <h4>Background</h4>
+     <div class="choose-bg">
+           <div class="bg-1 active"> 
+                   <span></span>
+                   <h5 for="bg-1">Light</h5>
+            </div>
+            <div class="bg-2">
+                <span></span>
+                <h5>Dim</h5>
+            </div>
+            <div class="bg-3">
+                <span></span>
+                <h5 for="bg-3">Lights Out</h5>
+            </div>
+     </div>
+  </div>
+</div>
+</div>
+      </main>
+
+<!-- code added NOW -->
+<div id="upload-form-container" style="display: none;">
+  <form class="dropzone-box" id="uploadForm" action="/posts" method="POST" enctype="multipart/form-data">
+    <!-- <h2>Upload and attach files</h2>
+    <p>Click to upload or drag and drop</p>  -->
+    <div class="dropzone-area">
+      <!-- <div class="file-upload-icon"></div> -->
+       <div class="upload-icon"></div>
+      <!-- <input type="file" required id="upload-file" name="uploaded-file"> -->
+      <input type="file" id="upload-file" name="uploaded-file" required accept="image/*">
+      <p class="file-info">No Files Selected</p>
+    </div>
+    <div class="dropzone-actions"> 
+      <div class="input-column">
+        <!-- <textarea id="caption" name="caption" placeholder="Enter caption"></textarea> -->
+        <textarea id="caption" name="caption" rows="3" placeholder="Enter caption..." required></textarea>
+      </div>
+      <!-- <div class="input-column">
+        <input type="text" id="location" name="location" placeholder="Enter location">
+      </div> -->
+      <div class="input-column">
+        <!-- <input type="text" id="hashtag" name="hashtag" placeholder="Enter hashtag"> -->
+        <input type="text" id="hashtag" name="hashtag" placeholder="Enter hashtag..." required>
+      </div>
+      <button type="reset">Cancel</button>
+      <button id="submit-button" type="submit">Upload</button>
+    </div>
+  </form>
+</div>  
+
+ 
+<!-- end -->
+      <!-- <script src="/js/Social.js"></script> -->
+      <script src="/js/j.js"></script>
+      <script src="up.js"></script>  
+
+      <!-- Added for New Post -->
+<script> 
+
+const currentUsername = "<%= currentUser.username %>";
+
+// 16/4/25 << ===================================================================
+// END >> 16/4/25 << ============================================================
+
+
+      </script>
+
+
+  </body>
+  
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Settings - <%= user.username %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="min-h-screen flex">
+    
+    <!-- Left Sidebar -->
+    <aside class="w-64 bg-white border-r hidden md:block">
+      <div class="p-6">
+        <h2 class="text-xl font-bold mb-6">Settings</h2>
+        <ul class="space-y-4 text-gray-700">
+          <li class="flex items-center gap-3 font-medium text-blue-600">
+            <i class="uil uil-user-circle text-xl"></i>
+            <span>Profile</span>
+          </li>
+          <li class="flex items-center gap-3 hover:text-blue-500 cursor-pointer">
+            <i class="uil uil-lock-alt text-xl"></i>
+            <span>Password</span>
+          </li>
+          <li class="flex items-center gap-3 hover:text-blue-500 cursor-pointer">
+            <i class="uil uil-eye-slash text-xl"></i>
+            <span>Privacy</span>
+          </li>
+          <li class="flex items-center gap-3 hover:text-red-600 cursor-pointer">
+            <i class="uil uil-trash-alt text-xl"></i>
+            <span>Delete Account</span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+      <div class="max-w-xl mx-auto space-y-10">
+
+        <!-- Profile Info -->
+        <section class="bg-white rounded-lg shadow-sm p-6">
+          <h2 class="text-lg font-semibold mb-4">Edit Profile</h2>
+          <form action="/settings/profile" method="POST" enctype="multipart/form-data" class="space-y-4">
+            <div class="flex items-center gap-4">
+              <img src="/uploads/<%= user.profile_image  || '/default-avatar.png' %>" alt="avatar" class="w-16 h-16 rounded-full object-cover border">
+              <input type="file" name="profileImage" class="text-sm">
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Username</label>
+              <input type="text" name="username" value="<%= user.username %>" class="mt-1 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium">Bio</label>
+              <!-- <textarea name="bio" rows="3" class="mt-1 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"><%= user.bio %></textarea> -->
+<textarea name="bio" rows="4" class="mt-1 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="👨‍💻 MCA Student | Web Dev Enthusiast
+🎮 Gamer | Let's connect & build the future
+💭 Dreaming in HTML, CSS & JavaScript
+📍 India | #CodeModeOn"><%= user.bio ? user.bio : '' %></textarea>
+
+
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save Changes</button>
+          </form>
+        </section>
+
+        <!-- Password Change -->
+        <section class="bg-white rounded-lg shadow-sm p-6">
+          <h2 class="text-lg font-semibold mb-4">Change Password</h2>
+          <form action="/settings/password" method="POST" class="space-y-4">
+            <input type="password" name="currentPassword" placeholder="Current Password" class="w-full border rounded-md px-3 py-2">
+            <input type="password" name="newPassword" placeholder="New Password" class="w-full border rounded-md px-3 py-2">
+            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Update Password</button>
+          </form>
+        </section>
+
+        <!-- Privacy -->
+        <section class="bg-white rounded-lg shadow-sm p-6">
+          <h2 class="text-lg font-semibold mb-4">Privacy Settings</h2>
+          <form action="/settings/privacy" method="POST" class="flex items-center justify-between">
+            <label class="text-sm font-medium">Private Account</label>
+            <input type="checkbox" name="isPrivate" <%= user.isPrivate ? "checked" : "" %> class="h-5 w-5 text-blue-500">
+            <button type="submit" class="ml-auto bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">Update</button>
+          </form>
+        </section>
+
+        <!-- Delete -->
+        <section class="bg-white rounded-lg shadow-sm p-6 border border-red-300">
+          <h2 class="text-lg font-semibold text-red-600 mb-4">Delete Account</h2>
+          <form action="/settings/delete-account" method="POST" onsubmit="return confirm('Are you sure you want to delete your account?');">
+            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Delete Account</button>
+          </form>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

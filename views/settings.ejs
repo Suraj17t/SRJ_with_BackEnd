@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Settings - <%= user.username %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <div class="max-w-4xl mx-auto py-10 px-6">
+    <h1 class="text-3xl font-bold mb-8">Settings</h1>
+
+    <!-- Profile Info Section -->
+    <div class="bg-white rounded-xl shadow p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">Profile Information</h2>
+      <form action="/settings/profile" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium">Username</label>
+          <input type="text" name="username" value="<%= currentUser.name %>" class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Bio</label>
+                      <textarea name="bio" rows="4" class="mt-1 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="👨‍💻 MCA Student | Web Dev Enthusiast
+                🎮 Gamer | Let's connect & build the future
+                💭 Dreaming in HTML, CSS & JavaScript
+                📍 India | #CodeModeOn"><%= user.bio || '' %>
+              </textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Profile Picture</label>
+          <input type="file" name="profileImage" class="mt-1 w-full">
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update Profile</button>
+      </form>
+    </div>
+
+    <!-- Password Change Section -->
+    <div class="bg-white rounded-xl shadow p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">Change Password</h2>
+      <form action="/settings/password" method="POST" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium">Current Password</label>
+          <input type="password" name="currentPassword" class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium">New Password</label>
+          <input type="password" name="newPassword" class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
+        </div>
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Change Password</button>
+      </form>
+    </div>
+
+    <!-- Privacy Settings -->
+    <div class="bg-white rounded-xl shadow p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">Privacy Settings</h2>
+      <form action="/settings/privacy" method="POST" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <span>Make my profile private</span>
+          <input type="checkbox" name="isPrivate" <%= user.isPrivate ? 'checked' : '' %> class="h-5 w-5 text-blue-600">
+        </div>
+        <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Update Privacy</button>
+      </form>
+    </div>
+
+    <!-- Delete Account -->
+    <div class="bg-red-100 rounded-xl shadow p-6">
+      <h2 class="text-xl font-semibold text-red-700 mb-4">Danger Zone</h2>
+      <form action="/settings/delete-account" method="POST" onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Delete My Account</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

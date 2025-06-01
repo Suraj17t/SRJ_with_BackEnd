@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= user.name %> (@<%= user.username %>) • Profile</title>
+  <link rel="stylesheet" href="/styles/profile.css" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fafafa;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Header & Hamburger */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .hamburger {
+      font-size: 24px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-menu a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
+
+      .nav-menu {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        background: #fff;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        padding: 15px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+      }
+
+      .nav-menu.active {
+        display: flex;
+      }
+    }
+
+    .profile-container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #dbdbdb;
+      border-radius: 10px;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .profile-header img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #ccc;
+    }
+
+    .profile-details {
+      flex: 1;
+    }
+
+    .username {
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .bio {
+      margin-top: 15px;
+      color: #333;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin: 30px 0 20px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .tab-button {
+      background: none;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      color: #888;
+      border-bottom: 2px solid transparent;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab-button.active {
+      color: #000;
+      border-color: #000;
+      font-weight: 600;
+    }
+
+    .posts-grid {
+      display: none;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .posts-grid.active {
+      display: grid;
+    }
+
+    .post {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: #eee;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    /* .post {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+} */
+
+    .post:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+    }
+
+    .post img,
+    .post video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+    }
+
+    /* Overlay for likes/comments */
+    /* .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.35);
+      color: white;
+      font-weight: 600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      opacity: 0;
+      border-radius: 8px;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      font-size: 16px;
+    } */
+/*  */
+.overlay {
+  position: absolute;
+  bottom: 10px;       /* bottom margin */
+  left: 50%;          /* center horizontally */
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: flex;
+  gap: 15px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  font-size: 14px;
+  align-items: center;
+  min-width: 100px;
+  justify-content: center;
+}
+
+    /*  */
+    .post:hover .overlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .overlay span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .overlay svg.icon-heart,
+    .overlay svg.icon-comment {
+      width: 20px;
+      height: 20px;
+      fill: white;
+      vertical-align: middle;
+    }
+
+    /*  */
+.post.horizontal {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  max-width: 100%;
+}
+
+.post.vertical {
+  aspect-ratio: 3 / 4;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Or you can do different grid spans */
+.posts-grid {
+  /* display: grid; */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.post.horizontal {
+  grid-column: span 2;
+}
+
+.post.vertical {
+  grid-column: span 1;
+}
+
+    /*  */
+
+/* Enhance CSS for Profile-header */
+
+/* Updated Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 25px;
+  background-color: #fff;
+  border-bottom: 1px solid #dbdbdb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: bold;
+  color: #262626;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.hamburger {
+  font-size: 24px;
+  cursor: pointer;
+  display: none;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+}
+
+.nav-menu a {
+  text-decoration: none;
+  color: #262626;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .nav-menu {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    background: #fff;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    padding: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .nav-menu.active {
+    display: flex;
+  }
+}
+
+/*  */
+/* Profile Container Tweak */
+.profile-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Profile Header with better alignment */
+.profile-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.profile-header img {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.profile-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Username and Friend Button Row */
+.profile-details > div:first-child {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+}
+
+.username {
+  font-size: 26px;
+  font-weight: 600;
+  color: #262626;
+}
+
+/* Friend Request Button (Styled like Instagram) */
+.profile-details form button {
+  background-color: #0095f6;
+  color: white;
+  font-weight: 600;
+  padding: 6px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.profile-details form button:hover {
+  background-color: #007dc1;
+}
+
+/* Followers, Following, Posts Section */
+.profile-details > div:nth-child(2) {
+  display: flex;
+  gap: 30px;
+  font-size: 15px;
+  color: #555;
+}
+
+.profile-details > div:nth-child(2) div {
+  font-weight: 500;
+}
+
+.profile-details > div:nth-child(2) strong {
+  color: #000;
+  font-weight: 600;
+}
+
+/* Bio Styling */
+.bio {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-details > div:first-child {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-details > div:nth-child(2) {
+    gap: 15px;
+  }
+
+  .tabs {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .tab-button {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+
+
+/*  */
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">SRJ Social</div>
+    <div class="hamburger" id="hamburger">&#9776;</div>
+    <nav class="nav-menu" id="navMenu">
+      <a href="/">Home</a>
+      <a href="/explore">Explore</a>
+      <a href="/profile">Profile</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </header>
+
+  <div class="profile-container">
+    <!-- <div class="profile-header">
+      <img src="/uploads/<%= user.profile_image %>" alt="Profile Picture" />
+      <div class="profile-details">
+        <div class="username"><%= user.name %></div>
+        <div class="bio">This is a sample bio. You can allow users to edit this later.</div>
+      </div>
+    </div> -->
+
+
+    <!-- Adding Friend Request Buttons -->
+                    <div class="profile-header">
+              <img src="/uploads/<%= user.profile_image %>" alt="Profile Picture" />
+              <div class="profile-details">
+                <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                  <div class="username"><%= user.name %></div>
+    <!-- ✅ Place the friend request button conditionally -->
+
+
+                      <% if (currentUser._id.toString() !== user._id.toString()) { %>
+                        <% if (currentUser.friends.includes(user._id)) { %>
+                          <form action="/unfriend/<%= user._id %>" method="POST">
+                            <button type="submit">Unfriend</button>
+                          </form>
+                        <% } else if (currentUser.sentRequests.includes(user._id)) { %>
+                          <form action="/cancel-request/<%= user._id %>" method="POST">
+                            <button type="submit">Cancel Request</button>
+                          </form>
+                        <% } else if (currentUser.receivedRequests.includes(user._id)) { %>
+                          <form action="/accept-request/<%= user._id %>" method="POST" style="display:inline;">
+                            <button>Accept</button>
+                          </form>
+                          <form action="/decline-request/<%= user._id %>" method="POST" style="display:inline;">
+                            <button>Decline</button>
+                          </form>
+                        <% } else { %>
+                          <form action="/send-request/<%= user._id %>" method="POST">
+                            <button>Send Friend Request</button>
+                          </form>
+                        <% } %>
+                      <% } %>
+
+
+
+                </div>
+                <div style="display: flex; gap: 30px; margin-top: 12px; font-size: 15px;">
+                  <div><strong><%= posts.length %></strong> posts</div>
+                   <div>
+                      <strong><%= Array.isArray(user.followers) ? user.followers.length : 0 %></strong>
+                      followers
+                    </div>
+                    <div>
+                      <strong><%= Array.isArray(user.following) ? user.following.length : 0 %></strong>
+                      following
+                    </div>
+                </div>
+                <div class="bio" style="margin-top: 15px; color: #333;">
+                  <!-- This is a sample bio. You can allow users to edit this later. -->
+                   👨‍💻 MCA Student | Web Dev Enthusiast<br>
+                   🎮 Gamer | Let's connect & build the future<br>
+                   💭 Dreaming in HTML, CSS & JavaScript<br>
+                   📍India | #CodeModeOn
+                </div>
+              </div>
+            </div>
+
+
+    <!-- END => Adding Friend Request Buttons -->
+
+    <div class="posts-section">
+      <div class="tabs">
+        <button class="tab-button active" data-tab="images">
+          <i class="fas fa-border-all"></i> Posts
+        </button>
+        <button class="tab-button" data-tab="videos">
+          <i class="fas fa-video"></i> Reels
+        </button>
+      </div>
+
+      <div class="posts-grid images-tab active">
+        <% posts.forEach(post => {
+          const ext = post.imageSource.split('.').pop().toLowerCase();
+          if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+        %>
+          <div class="post">
+            <img src="/uploads/<%= post.imageSource %>" alt="Post Image" />
+            <div class="overlay">
+              <span>
+                <svg class="icon-heart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path
+                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 
+                    19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                  />
+                </svg>
+                <%= post.no_likes %>
+              </span>
+              <span>
+                <svg class="icon-comment" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+                </svg>
+                <%= post.comments %>
+              </span>
+            </div>
+          </div>
+        <% } }) %>
+      </div>
+
+      <div class="posts-grid videos-tab">
+        <% posts.forEach(post => {
+          const ext = post.imageSource.split('.').pop().toLowerCase();
+          if (['mp4', 'webm', 'ogg'].includes(ext)) {
+        %>
+          <div class="post">
+            <video muted playsinline loop>
+              <source src="/uploads/<%= post.imageSource %>" type="video/<%= ext %>" />
+              Your browser does not support the video tag.
+            </video>
+            <div class="overlay">
+              <span>
+                <svg class="icon-heart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path
+                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 
+                    19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                  />
+                </svg>
+                <%= post.no_likes %>
+              </span>
+              <span>
+                <svg class="icon-comment" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+                </svg>
+                <%= post.comments %>
+              </span>
+            </div>
+          </div>
+        <% } }) %>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tabs
+const tabButtons = document.querySelectorAll(".tab-button");
+const imageTab = document.querySelector(".images-tab");
+const videoTab = document.querySelector(".videos-tab");
+
+tabButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    tabButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    if (btn.dataset.tab === "images") {
+      imageTab.classList.add("active");
+      videoTab.classList.remove("active");
+    } else {
+      imageTab.classList.remove("active");
+      videoTab.classList.add("active");
+    }
+  });
+});
+
+// Reels hover autoplay with promise handling and load()
+document.querySelectorAll(".videos-tab video").forEach((video) => {
+  video.addEventListener("mouseenter", () => {
+    video.load(); // reset video to start
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((error) => {
+        console.log("Video play error:", error);
+      });
+    }
+  });
+  video.addEventListener("mouseleave", () => {
+    video.pause();
+    video.currentTime = 0;
+  });
+});
+
+// Hamburger toggle
+const hamburger = document.getElementById("hamburger");
+const navMenu = document.getElementById("navMenu");
+hamburger.addEventListener("click", () => {
+  navMenu.classList.toggle("active");
+});
+
+
+// Aspect aspect-ratio
+document.querySelectorAll(".post img, .post video").forEach((media) => {
+  media.addEventListener("load", () => { // for images
+    setAspectClass(media);
+  });
+  media.addEventListener("loadedmetadata", () => { // for videos
+    setAspectClass(media);
+  });
+
+  // If media already loaded (cached), call immediately:
+  if (media.complete || media.readyState >= 1) {
+    setAspectClass(media);
+  }
+});
+
+function setAspectClass(media) {
+  const aspectRatio = media.naturalWidth / media.naturalHeight || media.videoWidth / media.videoHeight;
+  const post = media.closest(".post");
+  if (!post) return;
+  
+  post.classList.remove("horizontal", "vertical");
+  if (aspectRatio > 1) {
+    post.classList.add("horizontal"); // width > height
+  } else {
+    post.classList.add("vertical");   // height >= width
+  }
+}
+
+
+
+// End => Aspect-ratio
+
+  </script>
+</body>
+</html>

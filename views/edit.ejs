@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Post</title>
+  <link rel="stylesheet" href="/editform.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Edit Post</h1>
+    <!-- <form action="/posts/<%= post._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="image">Current Image:</label><br>
+        <% if (post.imageSource && post.imageSource.endsWith('.mp4')) { %>
+          <video width="300" controls>
+            <source src="/uploads/<%= post.imageSource %>" type="video/mp4">
+          </video>
+        <% } else { %>
+          <img src="/uploads/<%= post.imageSource %>" alt="Post Image" width="300">
+        <% } %>
+      </div>
+
+      <div class="form-group">
+        <label for="image">Change Image (optional):</label>
+        <input type="file" name="image" id="image">
+      </div>
+
+      <div class="form-group">
+        <label for="caption">Caption:</label>
+        <textarea name="caption" id="caption" rows="3"><%= post.caption %></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="hashtags">Hashtags:</label>
+        <input type="text" name="hashtags" id="hashtags" value="<%= post.hashtags %>">
+      </div>
+
+      <button type="submit" class="btn btn-primary">Update Post</button>
+    </form>
+  </div> -->
+  
+  <!-- <form class="dropzone-box body" id="uploadForm" action="/posts/<%= post._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="image">Current Image:</label><br>
+        <% if (post.imageSource && post.imageSource.endsWith('.mp4')) { %>
+          <video width="300" controls>
+            <source src="/uploads/<%= post.imageSource %>" type="video/mp4">
+          </video>
+        <% } else { %>
+          <img src="/uploads/<%= post.imageSource %>" alt="Post Image" width="300">
+        <% } %>
+      </div>
+
+    <div class="dropzone-area">
+      <div class="upload-icon"></div>
+      <input type="file" required id="upload-file" name="imageSource" accept="image/*,video/*"> 
+      <input type="file" name="image" id="image">
+
+      <p class="file-info">Change Image (optional):</p>
+    </div>
+    <div class="dropzone-actions"> 
+      <div class="input-column">
+
+        <textarea id="caption" name="caption" placeholder="Enter caption"></textarea>
+        <label for="caption">Caption:</label>
+        <textarea name="caption" id="caption" rows="3"><%= post.caption %></textarea>
+
+      </div>
+      <div class="input-column">
+      <input type="text" id="location" name="location" placeholder="Enter location">
+      </div>
+      <div class="input-column">
+        <label for="hashtags">Hashtags:</label>
+        <input type="text" id="hashtag" name="hashtags" placeholder="Enter hashtag">
+        <input type="text" name="hashtags" id="hashtags" value="<%= post.hashtags %>">
+
+      </div>
+
+      <button id="submit-button" type="submit">Upload</button>
+    </div>
+  </form> -->
+
+ 
+    <form class="dropzone-box body" id="uploadForm" action="/posts/<%= post._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+      <h1>Edit Post</h1>
+      <!-- Display current image/video -->
+      <div class="form-group" style="text-align: center;">
+        <label for="image">Current Image:</label><br>
+        <% if (post.imageSource && post.imageSource.endsWith('.mp4')) { %>
+          <video width="300" controls>
+            <source src="/uploads/<%= post.imageSource %>" type="video/mp4">
+          </video>
+        <% } else { %>
+          <img src="/uploads/<%= post.imageSource %>" alt="Post Image" width="300" style="border-radius: 1rem;">
+        <% } %>
+      </div>
+  
+      <!-- File Upload Area -->
+      <div class="dropzone-area">
+        <div class="upload-icon"></div>
+        <input type="file" name="image" id="upload-file" accept="image/*,video/*">
+        <p class="file-info">Choose a new image or video (optional)</p>
+      </div>
+  
+      <!-- Inputs -->
+      <div class="dropzone-actions"> 
+        <div class="input-column">
+          <label for="caption">Caption:</label>
+          <textarea name="caption" id="caption" placeholder="Enter caption"><%= post.caption %></textarea>
+        </div>
+        <div class="input-column">
+          <label for="hashtags">Hashtags:</label>
+          <input type="text" name="hashtags" id="hashtags" placeholder="Enter hashtags" value="<%= post.hashtags %>">
+        </div>
+       <div class="dropzone-buttons">
+          <button type="reset">Clear</button>
+          <button id="submit-button" type="submit">Update</button>
+       </div>
+      </div>
+    </form>
+ 
+  
+
+  <script>
+    
+const dropzoneBox = document.querySelector(".dropzone-box");
+const inputElement = document.getElementById("upload-file");
+    const dropZoneElement = inputElement.closest(".dropzone-area");
+
+    inputElement.addEventListener("change", () => {
+      const filesArr = Array.from(inputElement.files);
+      if (filesArr.length) {
+        updateDropzoneFileList(dropZoneElement, filesArr);
+
+        // Set the value to the file name only (browser will submit the full file if using multipart/form-data)
+        inputElement.setAttribute("value", filesArr[0].name); // purely cosmetic; doesn't affect file upload
+      }
+    });
+
+    dropZoneElement.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZoneElement.classList.add("dropzone--over");
+    });
+
+    ["dragleave", "dragend"].forEach((type) => {
+      dropZoneElement.addEventListener(type, () => {
+        dropZoneElement.classList.remove("dropzone--over");
+      });
+    });
+
+    dropZoneElement.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZoneElement.classList.remove("dropzone--over");
+
+      const files = e.dataTransfer.files;
+      if (files.length) {
+        inputElement.files = files;
+        updateDropzoneFileList(dropZoneElement, Array.from(files));
+        inputElement.setAttribute("value", files[0].name);
+      }
+    });
+
+    const updateDropzoneFileList = (dropzoneElement, filesArr) => {
+      const dropzoneFileMessage = dropzoneElement.querySelector(".file-info");
+      const filesString = filesArr.map(file => `<li>${file.name}</li>`).join('');
+      dropzoneFileMessage.innerHTML = `<ul>${filesString}</ul>`;
+    };
+
+    dropzoneBox.addEventListener("reset", () => {
+      const dropzoneFileMessage = dropZoneElement.querySelector(".file-info");
+      dropzoneFileMessage.innerHTML = 'Choose a new image or video (optional)';
+    });
+
+  </script>
+</body>
+</html>

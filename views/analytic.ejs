@@ -1,0 +1,474 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Post Analytics</title>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .section {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .post-card, .user-card {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+    .post-card:last-child, .user-card:last-child {
+      border-bottom: none;
+    }
+    .hashtag {
+      background: #e0e0e0;
+      border-radius: 12px;
+      padding: 4px 10px;
+      margin: 3px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📊 Post Analytics</h1>
+
+  <div class="section">
+    <h2>Overview</h2>
+    <p><strong>Total Posts:</strong> <%= posts.length %></p>
+    <p><strong>Total Users:</strong> <%= users.length %></p>
+    <p><strong>Average Likes per Post:</strong> <%= avgLikes.toFixed(2) %></p>
+    <p><strong>Average Comments per Post:</strong> <%= avgComments.toFixed(2) %></p>
+  </div>
+
+  <div class="section">
+    <h2>🔥 Top Liked Posts</h2>
+    <% topLikedPosts.forEach(post => { %>
+      <div class="post-card">
+        <p><strong><%= post.name %></strong> (<%= post.no_likes %> likes)</p>
+        <p>Caption: <%= post.caption %></p>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="section">
+    <h2>👑 Top Users by Number of Posts</h2>
+    <% topUsersByPosts.forEach(entry => { %>
+      <div class="user-card">
+        <p><strong><%= entry.user.name %></strong> - <%= entry.count %> posts</p>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="section">
+    <h2>📅 Post Frequency (Daily)</h2>
+    <ul>
+      <% Object.keys(postFrequency).forEach(date => { %>
+        <li><%= date %>: <%= postFrequency[date] %> post(s)</li>
+      <% }) %>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>#️⃣ Most Used Hashtags</h2>
+    <% topHashtags.forEach(tag => { %>
+      <span class="hashtag"><%= tag.name %> (<%= tag.count %>)</span>
+    <% }) %>
+  </div>
+
+</body>
+</html> -->
+
+<!-- Try 2 -->
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Post Analytics</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .section {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .hashtag {
+      background: #e0e0e0;
+      border-radius: 12px;
+      padding: 4px 10px;
+      margin: 3px;
+      display: inline-block;
+    }
+    canvas {
+      display: block;
+      max-width: 100%;
+      max-height: 300px;
+      height: 250px !important;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📊 Post Analytics</h1>
+
+  <div class="section">
+    <h2>Overview</h2>
+    <p><strong>Total Posts:</strong> <%= posts.length %></p>
+    <p><strong>Total Users:</strong> <%= users.length %></p>
+    <p><strong>Average Likes per Post:</strong> <%= avgLikes.toFixed(2) %></p>
+    <p><strong>Average Comments per Post:</strong> <%= avgComments.toFixed(2) %></p>
+  </div>
+
+  <div class="section">
+    <h2>🔥 Top Liked Posts</h2>
+    <canvas id="likesChart"></canvas>
+  </div>
+
+  <div class="section">
+    <h2>👑 Top Users by Number of Posts</h2>
+    <canvas id="topUsersChart"></canvas>
+  </div>
+
+  <div class="section">
+    <h2>📅 Post Frequency (Daily)</h2>
+    <canvas id="postFreqChart"></canvas>
+  </div>
+
+  <div class="section">
+    <h2>#️⃣ Most Used Hashtags</h2>
+    <canvas id="hashtagChart"></canvas>
+    <div style="margin-top: 10px;">
+      <% topHashtags.forEach(tag => { %>
+        <span class="hashtag"><%= tag.name %> (<%= tag.count %>)</span>
+      <% }) %>
+    </div>
+  </div>
+
+  Serialized data
+  <script>
+    const topLikedPostLabels = <%- JSON.stringify(topLikedPosts.map(p => p.name || "Unnamed")) %>;
+    const topLikedPostLikes = <%- JSON.stringify(topLikedPosts.map(p => p.no_likes || 0)) %>;
+
+    const topUsersLabels = <%- JSON.stringify(topUsersByPosts.map(u => u.user?.name || "Unknown")) %>;
+    const topUsersCounts = <%- JSON.stringify(topUsersByPosts.map(u => u.count)) %>;
+
+    const postFrequencyLabels = <%- JSON.stringify(Object.keys(postFrequency)) %>;
+    const postFrequencyCounts = <%- JSON.stringify(Object.values(postFrequency)) %>;
+
+    const hashtagLabels = <%- JSON.stringify(topHashtags.map(h => h.name)) %>;
+    const hashtagCounts = <%- JSON.stringify(topHashtags.map(h => h.count)) %>;
+  </script>
+
+  Chart.js code
+  <script>
+    new Chart(document.getElementById('likesChart'), {
+      type: 'bar',
+      data: {
+        labels: topLikedPostLabels,
+        datasets: [{
+          label: 'Likes',
+          data: topLikedPostLikes,
+          backgroundColor: 'rgba(255, 99, 132, 0.7)'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    new Chart(document.getElementById('topUsersChart'), {
+      type: 'doughnut',
+      data: {
+        labels: topUsersLabels,
+        datasets: [{
+          data: topUsersCounts,
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    new Chart(document.getElementById('postFreqChart'), {
+      type: 'line',
+      data: {
+        labels: postFrequencyLabels,
+        datasets: [{
+          label: 'Posts per Day',
+          data: postFrequencyCounts,
+          fill: true,
+          borderColor: '#4CAF50',
+          backgroundColor: 'rgba(76, 175, 80, 0.2)'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    new Chart(document.getElementById('hashtagChart'), {
+      type: 'pie',
+      data: {
+        labels: hashtagLabels,
+        datasets: [{
+          data: hashtagCounts,
+          backgroundColor: [
+            '#FF6384', '#36A2EB', '#FFCE56', '#8E44AD', '#27AE60',
+            '#F39C12', '#E74C3C', '#3498DB', '#2ECC71', '#9B59B6'
+          ]
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  </script>
+
+</body>
+</html> -->
+
+
+<!-- END => Try 2 -->
+
+<!-- Try 3 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Post Analytics</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .section {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .post-card, .user-card {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+    .post-card:last-child, .user-card:last-child {
+      border-bottom: none;
+    }
+    .hashtag {
+      background: #e0e0e0;
+      border-radius: 12px;
+      padding: 4px 10px;
+      margin: 3px;
+      display: inline-block;
+    }
+    canvas {
+      max-width: 100%;
+      max-height: 300px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📊 Post Analytics</h1>
+
+  <div class="section">
+    <h2>Overview</h2>
+    <p><strong>Total Posts:</strong> <%= posts.length %></p>
+    <p><strong>Total Users:</strong> <%= users.length %></p>
+    <p><strong>Average Likes per Post:</strong> <%= avgLikes.toFixed(2) %></p>
+    <p><strong>Average Comments per Post:</strong> <%= avgComments.toFixed(2) %></p>
+  </div>
+
+  <div class="section">
+    <h2>🔥 Top Liked Posts</h2>
+    <canvas id="likesChart"></canvas>
+  </div>
+
+  <div class="section">
+    <h2>👑 Top Users by Number of Posts</h2>
+    <canvas id="topUsersChart"></canvas>
+  </div>
+
+  <div class="section">
+    <h2>📅 Post Frequency (Daily)</h2>
+    <canvas id="postFreqChart"></canvas>
+  </div>
+
+  <div class="section">
+    <h2>#️⃣ Most Used Hashtags</h2>
+    <canvas id="hashtagChart"></canvas>
+    <div style="margin-top: 10px;">
+      <% topHashtags.forEach(tag => { %>
+        <span class="hashtag"><%= tag.name %> (<%= tag.count %>)</span>
+      <% }) %>
+    </div>
+  </div>
+
+  <script>
+    function formatNumber(n) {
+      if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+      if (n >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+      return n;
+    }
+
+    const topLikedPostLabels = <%- JSON.stringify(topLikedPosts.map(p => p.name || 'Unnamed')) %>;
+    const topLikedPostLikes = <%- JSON.stringify(topLikedPosts.map(p => p.no_likes || 0)) %>;
+
+    const topUsersLabels = <%- JSON.stringify(topUsersByPosts.map(u => u.user?.name || 'Unknown')) %>;
+    const topUsersCounts = <%- JSON.stringify(topUsersByPosts.map(u => u.count || 0)) %>;
+
+    const postFreqLabels = <%- JSON.stringify(Object.keys(postFrequency)) %>;
+    const postFreqCounts = <%- JSON.stringify(Object.values(postFrequency)) %>;
+
+    const hashtagLabels = <%- JSON.stringify(topHashtags.map(h => h.name || '')) %>;
+    const hashtagCounts = <%- JSON.stringify(topHashtags.map(h => h.count || 0)) %>;
+
+    // Likes Chart
+    new Chart(document.getElementById('likesChart'), {
+      type: 'bar',
+      data: {
+        labels: topLikedPostLabels,
+        datasets: [{
+          label: 'Likes',
+          data: topLikedPostLikes,
+          backgroundColor: 'rgba(255, 99, 132, 0.7)'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: value => formatNumber(value)
+            }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.dataset.label}: ${formatNumber(ctx.parsed.y)}`
+            }
+          }
+        }
+      }
+    });
+
+    // Top Users Chart
+    new Chart(document.getElementById('topUsersChart'), {
+      type: 'doughnut',
+      data: {
+        labels: topUsersLabels,
+        datasets: [{
+          data: topUsersCounts,
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.label}: ${formatNumber(ctx.raw)} posts`
+            }
+          }
+        }
+      }
+    });
+
+    // Post Frequency Chart
+    new Chart(document.getElementById('postFreqChart'), {
+      type: 'line',
+      data: {
+        labels: postFreqLabels,
+        datasets: [{
+          label: 'Posts per Day',
+          data: postFreqCounts,
+          fill: true,
+          borderColor: '#4CAF50',
+          backgroundColor: 'rgba(76, 175, 80, 0.2)'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: value => formatNumber(value)
+            }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.dataset.label}: ${formatNumber(ctx.parsed.y)}`
+            }
+          }
+        }
+      }
+    });
+
+    // Hashtag Chart
+    new Chart(document.getElementById('hashtagChart'), {
+      type: 'pie',
+      data: {
+        labels: hashtagLabels,
+        datasets: [{
+          data: hashtagCounts,
+          backgroundColor: [
+            '#FF6384', '#36A2EB', '#FFCE56', '#8E44AD', '#27AE60',
+            '#F39C12', '#E74C3C', '#3498DB', '#2ECC71', '#9B59B6'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.label}: ${formatNumber(ctx.raw)}`
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
+
+
+<!-- END => TRY 3 -->

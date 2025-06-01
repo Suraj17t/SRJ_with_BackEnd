@@ -1,0 +1,496 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Messages • Direct</title>
+<link rel="stylesheet" href="/message.css">
+
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <h2>Instagram</h2>
+      <ul>
+        <li><a href="/home">Home</a></li>
+        <li><a href="/messages" class="active">Messages</a></li>
+        <li><a href="/profile">Profile</a></li>
+        <li><a href="/logout">Logout</a></li>
+      </ul>
+    </div>
+
+    <div class="chat-container">
+      <div class="chat-list">
+        <h3>Chats</h3>
+        <% chats.forEach(chat => { %>
+          <div class="chat-item">
+            <img src="/uploads/<%= user.profile_image %>" alt="Avatar">
+            <div>
+              <strong><%= chat.username %></strong><br>
+              <small><%= chat.lastMessage %></small>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <div class="chat-window">
+        <% if (selectedChat) { %>
+          <div class="chat-header">
+            <img src="<%= selectedChat.userAvatar %>" alt="Avatar">
+            <h3><%= selectedChat.username %></h3>
+          </div>
+
+          <div class="chat-messages">
+            <% selectedChat.messages.forEach(message => { %>
+              <div class="<%= message.sender === currentUser ? 'message sent' : 'message received' %>">
+                <p><%= message.text %></p>
+              </div>
+            <% }) %>
+          </div>
+
+          <form action="/messages/send" method="POST" class="message-form">
+            <input type="hidden" name="to" value="<%= selectedChat.username %>">
+            <input type="text" name="message" placeholder="Message..." required>
+            <button type="submit">Send</button>
+          </form>
+        <% } else { %>
+          <div class="no-chat">
+            <p>Select a conversation to start messaging</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</body>
+</html> -->
+
+<!-- Try 2 -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat with <%= friend.name %></title>
+  <link rel="stylesheet" href="/styles/chat.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+  <style>
+    :root {
+      --bg-light: #f0f0f0;
+      --bg-dark: #e5ddd5;
+      --me-bubble: #dcf8c6;
+      --them-bubble: #fff;
+      --header-bg: #128c7e;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    aside {
+      width: 25%;
+      border-right: 1px solid #ccc;
+      background: #f8f8f8;
+      overflow-y: auto;
+    }
+
+    aside header {
+      background-color: #128c7e;
+      color: white;
+      padding: 10px;
+      font-size: 18px;
+    }
+
+    aside a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      text-decoration: none;
+      color: black;
+      border-bottom: 1px solid #eee;
+    }
+
+    aside a:hover {
+      background-color: #e0f2f1;
+    }
+
+    aside img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--header-bg);
+      color: white;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 15px;
+      background-color: #ece5dd;
+    }
+
+    .msg {
+      width: fit-content;
+      padding: 10px 14px;
+      margin: 10px 0;
+      border-radius: 8px 8px 0 8px;
+      position: relative;
+      line-height: 1.4;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+      max-width: 60%;
+    }
+
+    .msg img {
+      max-width: 200px;
+      display: block;
+    }
+
+    .msg.me {
+      background-color: var(--me-bubble);
+      margin-left: auto;
+      border-radius: 8px 8px 8px 0;
+    }
+
+    .msg.them {
+      background-color: var(--them-bubble);
+      margin-right: auto;
+    }
+
+    .msg .time {
+      font-size: 0.72em;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+    }
+
+    .dropdown-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .msg:hover .dropdown-toggle {
+      display: inline;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 20px;
+      right: 0;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 100;
+    }
+
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-menu button {
+      background: none;
+      border: none;
+      padding: 8px 12px;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    #input-area {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      background: white;
+      border-top: 1px solid #ddd;
+      gap: 10px;
+    }
+
+    #input {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    #send-btn, #emoji-btn, #attach-btn {
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: #128c7e;
+    }
+
+    emoji-picker {
+      position: absolute;
+      bottom: 70px;
+      right: 20px;
+      display: none;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <aside>
+      <header>Friends</header>
+      <% me.friends.forEach(friendUser => { %>
+        <a href="/chat/<%= friendUser._id %>">
+          <img src="/uploads/<%= friendUser.profile_image || 'default-avatar.png' %>" alt="Avatar">
+          <span><%= friendUser.name %></span>
+        </a>
+      <% }) %>
+    </aside>
+
+    <main>
+      <header>
+        <img src="/uploads/<%= friend.profile_image || 'default-avatar.png' %>" alt="Avatar">
+        <h3><%= friend.name %></h3>
+      </header>
+
+      <div id="messages">
+        <% messages.forEach(msg => { %>
+          <div class="msg <%= msg.senderId.toString() === me._id.toString() ? 'me' : 'them' %>" data-id="<%= msg._id %>">
+            <span class="text"><%- msg.messageText %></span>
+            <span class="time"><%= new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></span>
+            <% if (msg.senderId.toString() === me._id.toString()) { %>
+              <div class="dropdown">
+                <button class="dropdown-toggle">⋮</button>
+                <div class="dropdown-menu">
+                  <button class="edit">Edit</button>
+                  <button class="delete">Delete</button>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+
+      <div id="input-area">
+        <button id="emoji-btn">😊</button>
+        <button id="attach-btn">📎</button>
+        <input id="input" type="text" autocomplete="off" placeholder="Type a message…" />
+        <input type="file" id="file-input" style="display: none;" />
+        <button id="send-btn" type="button">➤</button>
+      </div>
+    </main>
+  </div>
+
+  <emoji-picker id="emoji-picker"></emoji-picker>
+  <audio id="notification-sound" src="/sounds/notification.MPEG" preload="auto"></audio>
+
+  <script>
+    const meId = "<%= me._id %>";
+    const friendId = "<%= friend._id %>";
+    const room = [meId, friendId].sort().join("--");
+
+    const socket = io();
+    socket.emit("join room", { room });
+
+    const messagesEl = document.getElementById("messages");
+    const input = document.getElementById("input");
+    const sendBtn = document.getElementById("send-btn");
+    const emojiBtn = document.getElementById("emoji-btn");
+    const emojiPicker = document.getElementById("emoji-picker");
+    const sound = document.getElementById("notification-sound");
+    const attachBtn = document.getElementById("attach-btn");
+    const fileInput = document.getElementById("file-input");
+
+    let editingMessageId = null;
+
+    window.onload = () => {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    };
+
+    function appendMessage({ _id, senderId, messageText, timestamp }) {
+      const div = document.createElement("div");
+      div.classList.add("msg", senderId === meId ? "me" : "them");
+      div.dataset.id = _id;
+
+      div.innerHTML = `
+        <span class="text">${messageText}</span>
+        <span class="time">${new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+        ${senderId === meId ? `
+          <div class="dropdown">
+            <button class="dropdown-toggle">⋮</button>
+            <div class="dropdown-menu">
+              <button class="edit">Edit</button>
+              <button class="delete">Delete</button>
+            </div>
+          </div>` : ""}
+      `;
+
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    socket.on("chat message", msg => {
+      appendMessage(msg);
+      if (msg.senderId !== meId) sound.play();
+    });
+
+    socket.on("message updated", ({ _id, messageText }) => {
+      const el = document.querySelector(`.msg[data-id="${_id}"] .text`);
+      if (el) el.innerHTML = messageText;
+    });
+
+    socket.on("message deleted", (_id) => {
+      const el = document.querySelector(`.msg[data-id="${_id}"]`);
+      if (el) el.remove();
+    });
+
+    function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      if (editingMessageId) {
+        socket.emit("edit message", { _id: editingMessageId, messageText: text });
+        editingMessageId = null;
+      } else {
+        socket.emit("chat message", {
+          room,
+          text,
+          senderId: meId,
+          receiverId: friendId
+        });
+      }
+
+      input.value = "";
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+    input.addEventListener("keypress", e => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    emojiBtn.addEventListener("click", () => {
+      emojiPicker.style.display = emojiPicker.style.display === "none" ? "block" : "none";
+    });
+
+    emojiPicker.addEventListener("emoji-click", e => {
+      input.value += e.detail.unicode;
+      emojiPicker.style.display = "none";
+      input.focus();
+    });
+
+    attachBtn.addEventListener("click", () => fileInput.click());
+
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("senderId", meId);
+      formData.append("receiverId", friendId);
+
+      const res = await fetch("/upload-message-file", {
+        method: "POST",
+        body: formData
+      });
+
+      const msg = await res.json();
+      socket.emit("chat message", { ...msg, room });
+    });
+
+    messagesEl.addEventListener("click", e => {
+      const msgDiv = e.target.closest(".msg");
+      const id = msgDiv?.dataset?.id;
+
+      if (e.target.classList.contains("edit")) {
+        const text = msgDiv.querySelector(".text").innerHTML;
+        input.value = text.replace(/<[^>]*>?/gm, ""); // strip HTML
+        editingMessageId = id;
+        input.focus();
+      }
+
+      if (e.target.classList.contains("delete")) {
+        if (confirm("Delete this message?")) {
+          socket.emit("delete message", { _id: id });
+        }
+      }
+    });
+  </script>
+</body>
+</html> -->
+
+
+<!-- END => Try 2 -->
+
+
+<!-- Try 3 -->
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Messages</title>
+  <style>
+    body { font-family: sans-serif; display: flex; }
+    .friends-section { width: 25%; border-right: 1px solid #ccc; padding: 10px; }
+    .friend-card { margin-bottom: 10px; display: flex; align-items: center; }
+    .friend-card img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; }
+    .chat-window { width: 75%; padding: 20px; }
+    .message { margin-bottom: 10px; }
+    .message.you { text-align: right; }
+  </style>
+</head>
+<body>
+
+  <!-- Friend list -->
+  <div class="friends-section">
+    <h3>Friends</h3>
+    <% friends.forEach(friend => { %>
+      <div class="friend-card">
+        <img src="/uploads/<%= friend.profile_image %>" alt="profile">
+        <p>
+          <a href="/chat/<%= friend._id %>" style="text-decoration: none; color: black;">
+            <%= friend.name %>
+          </a>
+        </p>
+      </div>
+    <% }) %>
+  </div>
+
+  <!-- Chat section -->
+
+
+</body>
+</html>
+
+<!-- END => Try 3 -->
