@@ -1,0 +1,162 @@
+
+    /* Drop Zone Starting ======================= */
+    .dropzone-box body {
+        font-family: 'Work Sans', sans-serif;
+        background: #111315;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+         height: 100vh; 
+        padding: 1rem;
+        /* color: #FFF; */
+        
+      }                                   
+    
+      /*  
+      width: 100vw;
+      height: 100vh; 
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      text-align: center;
+      display: grid;
+      place-items: center;
+      font-size: 0.9rem;
+      display: none;
+      /*  */
+       .dropzone-box {
+        border-radius: 1rem;
+        padding: 2rem;
+        color:#111315;
+        max-width: 36rem;
+        border: 1px solid #333333;
+        width: 100%;
+        background: #1A1C1E;
+        width: 100vw;
+        position: fixed;
+        gap: 1rem;
+        top: 0;
+        left: 0;
+        z-index: 100;
+        display: grid;
+        /* place-items: center; */
+        font-size: 0.9rem;
+        display: block;
+      } 
+      
+      .dropzone-box h2 {
+        font-size: 1rem;
+        margin-bottom: 0.6rem;
+        color: #FFF;
+      }
+      
+      .dropzone-box p {
+        font-size: 1.15rem;
+        color: #D3D3D3;
+      }
+      
+      .dropzone-area {
+        padding: 1rem;
+        position: relative;
+        /* margin-top: 1.5rem; */
+        min-height: 8rem;
+        display: flex;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        border: 2px dashed #FFF;
+        border-radius: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      
+      .dropzone-area [type="file"] {
+        cursor: pointer;
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+      
+      .upload-icon {
+        width: 100px; /* Adjust width and height as needed */
+        height: 100px;
+        background-image: url('.//uploads/upload.svg'); /* Replace 'upload.svg' with the path to your SVG file */
+        background-size: cover;
+    }
+      
+      .dropzone-area:hover {
+        background: #262626;
+      }
+      
+      .dropzone-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-top: 2rem;
+        gap: 1rem;
+      }
+      
+      .input-column {
+        flex-basis: 100%;
+      }
+      
+      .input-column textarea,
+      .input-column input {
+        width: 100%;
+        height: 3rem;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        font-size: 1rem;
+        border: 1px solid #333333;
+        border-radius: 0.5rem;
+        /* color: #FFF; */
+      }
+      
+      .input-column textarea {
+        height: 3rem;
+      }
+      
+      .input-column location{
+        height: 2rem;
+      }
+      .dropzone-actions button {
+        flex-grow: 1;
+        min-height: 3rem;
+        font-size: 1.2rem;
+        border: none;
+        transition: background-color 0.3s ease;
+    
+      }
+      
+      .dropzone-actions button[type='reset'] {
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: #FFF;
+        background: #262626;
+        cursor: pointer;
+        border: 1px solid #333333;
+      }
+      
+      .dropzone-actions button[type='reset']:hover {
+        background: #383838;
+      }
+      
+      .dropzone-actions button[type='submit'] {
+        background: #8800ff;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: #F2F7FE;
+        border: none;
+        cursor: pointer;
+      }
+      
+      .dropzone-actions button[type='submit']:hover {
+        background: #6c00ca;
+      }
+
+      /* DropZONE END =============================== */

@@ -1,0 +1,100 @@
+:root {
+  --primary-color-hue: 252;
+  --light-color-lightness: 95%;
+  --white-color-lightness: 100%;
+  --dark-color-lightness: 17%;
+
+  --color-white: hsl(252, 30%, var(--white-color-lightness));
+  --color-light: hsl(252, 30%, var(--light-color-lightness));
+  --color-gray: hsl(var(--primary-color-hue), 15%, 65%);
+  --color-primary: hsl(var(--primary-color-hue), 75%, 60%);
+  --color-dark: hsl(252, 30%, var(--dark-color-lightness));
+
+  --border-radius: 2rem;
+  --btn-padding: 0.6rem 2rem;
+}
+
+/* Navbar wrapper to scope styles */
+.navbar-container {
+  width: 100%;
+  padding: 0.7rem 0;
+  position: fixed;
+  top: 0;
+  z-index: 10;
+  background: var(--color-white);
+  font-family: 'Poppins', sans-serif;
+  color: var(--color-dark);
+}
+
+/* Centered layout inside navbar */
+.navbar-container .navbar-inner {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo */
+.navbar-container .navbar-logo {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+/* Search bar */
+.navbar-container .navbar-search {
+  background: var(--color-light);
+  border-radius: var(--border-radius);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-container .navbar-search input[type="search"] {
+  outline: none;
+  background: transparent;
+  border: none;
+  width: 30vw;
+  color: var(--color-dark);
+}
+
+.navbar-container .navbar-search input::placeholder {
+  color: var(--color-gray);
+}
+
+/* Right side buttons and profile */
+.navbar-container .navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Buttons */
+.navbar-container .btn {
+  display: inline-block;
+  padding: var(--btn-padding);
+  font-weight: 500;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  background: var(--color-primary);
+  color: white;
+  transition: all 300ms ease;
+}
+
+.navbar-container .btn:hover {
+  opacity: 0.8;
+}
+
+/* Profile Picture */
+.navbar-container .navbar-profile-pic {
+  width: 2.7rem;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.navbar-container .navbar-profile-pic img {
+  display: block;
+  width: 100%;
+}
